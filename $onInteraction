@@ -1,0 +1,47 @@
+PREFIJO: $onInteraction
+
+$nomention
+$onlyIf[$or[$customID==otr-$authorID;$customID==cnc-$authorID]==true;]
+$jsonParse[$getUserVar[pelea-gallo]]
+$deleteMessage[$channelID;$messageID]
+$if[$customID==otr-$authorID]
+$if[$random[1;100]<=$json[pro]]
+$var[gano;si]
+$jsonSetString[pro;$sum[$json[pro];1]]
+$jsonSetString[racha;$sum[$json[racha];1]]
+$if[$json[racha]>$json[mr]]
+$jsonSetString[mr;$sum[$json[mr];1]]
+$endif
+$setUserVar[pelea-gallo;$jsonStringify]
+$else
+$var[gano;no]
+$jsonSetString[pro;30]
+$jsonSetString[racha;0]
+$jsonSetString[mess;]
+$setUserVar[pelea-gallo;$jsonStringify]
+$endif
+
+$jsonParse[$getUserVar[pelea-gallo]]
+$var[id;$sendEmbedMessage[$channelID;;;;
+$replaceText[$replaceText[$checkCondition[$var[gano]==si];true;
+⭐ | Mejor racha: ``$json[mr]``
+🥊 | Racha actual: ``$json[racha]``
+
+🐓 | Tu gallo ganó;1];false;⚰️ | Tu gallo murió;1];$replaceText[$replaceText[$checkCondition[$var[gano]==si];true;00ff00;1];false;ff0000;1];$username;$authorAvatar;$replaceText[$replaceText[$checkCondition[$var[gano]==si];true;Fuerza aumentada ($json[pro]% de ganar);1];false;¡Mala suerte!;1];;;;;yes]]
+$if[$var[gano]==si]
+$async[N]
+$addButton[no;otr-$authorID;Pelear otra vez;success;no;;$var[id]]
+$addButton[no;cnc-$authorID;Cancelar;danger;no;;$var[id]]
+$endasync
+$await[N]
+$endif
+$elseif[$customID==cnc-$authorID]
+$jsonSetString[pro;30]
+$jsonSetString[racha;0]
+$jsonSetString[mess;]
+$setUserVar[pelea-gallo;$jsonStringify]
+$author[$username]
+$authorIcon[$authorAvatar]
+$description[✅ | Juego cancelado correctamente]
+$color[6e00ff]
+$endif
