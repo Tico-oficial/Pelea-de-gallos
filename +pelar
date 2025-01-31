@@ -1,0 +1,39 @@
+PREFIJO EL QUE QUIERAN
+
+$nomention
+$jsonParse[$getUserVar[pelea-gallo]]
+$if[$json[mess]==]
+$else
+❌ | Ya tienes un juego activo $json[mess]
+$deletecommand
+$deleteIn[3s]
+$stop
+$endif
+
+$if[$random[1;100]<=$json[pro]]
+$var[gano;si]
+$jsonSetString[pro;31]
+$jsonSetString[racha;$sum[$json[racha];1]]
+$if[$json[racha]>$json[mr]]
+$jsonSetString[mr;$sum[$json[mr];1]]
+$endif
+$setUserVar[pelea-gallo;$jsonStringify]
+$else
+$var[gano;no]
+$endif
+$var[id;$sendEmbedMessage[$channelID;;;;
+$replaceText[$replaceText[$checkCondition[$var[gano]==si];true;
+⭐ | Mejor racha: ``$json[mr]``
+🥊 | Racha actual: ``$json[racha]``
+
+🐓 | Tu gallo ganó;1];false;⚰️ | Tu gallo murió;1];$replaceText[$replaceText[$checkCondition[$var[gano]==si];true;00ff00;1];false;ff0000;1];$username;$authorAvatar;$replaceText[$replaceText[$checkCondition[$var[gano]==si];true;Fuerza aumentada ($json[pro]% de ganar);1];false;¡Mala suerte!;1];;;;;yes]]
+$if[$var[gano]==si]
+$jsonParse[$getUserVar[pelea-gallo]]
+$jsonSetString[mess;https://discord.com/channels/$guildID/$channelID/$var[id]]
+$setUserVar[pelea-gallo;$jsonStringify]
+$async[N]
+$addButton[no;otr-$authorID;Pelear otra vez;success;no;;$var[id]]
+$addButton[no;cnc-$authorID;Cancelar;danger;no;;$var[id]]
+$endasync
+$await[N]
+$endif
